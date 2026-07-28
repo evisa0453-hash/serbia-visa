@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Force HTTPS & Force WWW
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^ https://www.serbia-evisa.online%{REQUEST_URI} [L,R=301]
