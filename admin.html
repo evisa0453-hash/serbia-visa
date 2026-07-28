@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — eVisa</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+  padding: 32px;
+  width: 100%;
+  max-width: 600px;
+}
+h2 {
+  font-size: 20px; color: #1a3e72; margin-bottom: 24px;
+  text-align: center; border-bottom: 2px solid #1a3e72; padding-bottom: 12px;
+}
+.form-group { margin-bottom: 14px; }
+label { display: block; font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+input[type=text], input[type=password], input[type=file] {
+  width: 100%; padding: 9px 12px; border: 1px solid #ccc;
+  border-radius: 5px; font-size: 13px;
+}
+input:focus { outline: none; border-color: #1a3e72; box-shadow: 0 0 0 2px rgba(26,62,114,.15); }
+.btn {
+  width: 100%; padding: 11px; background: #1a3e72; color: #fff;
+  border: none; border-radius: 5px; font-size: 14px; font-weight: bold;
+  cursor: pointer; margin-top: 6px;
+}
+.btn:hover { background: #14305a; }
+.btn-red { background: #c0392b; }
+.btn-red:hover { background: #96281b; }
+.btn-sm {
+  width: auto; padding: 5px 12px; font-size: 12px;
+  margin-top: 0; border-radius: 4px;
+}
+.btn-green { background: #2e7d32; }
+.btn-green:hover { background: #1b5e20; }
+
+.msg { padding: 10px 14px; border-radius: 5px; margin-bottom: 14px; font-size: 13px; }
+.msg.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.msg.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* Panels */
+#loginPanel, #adminPanel { display: none; }
+#loginPanel.active, #adminPanel.active { display: block; }
+
+.section-title {
+  font-size: 13px; font-weight: bold; color: #1a3e72;
+  margin: 22px 0 12px; padding-bottom: 6px;
+  border-bottom: 1px solid #e0e4ef;
+}
+.top-bar {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 16px;
+}
+.top-bar h3 { font-size: 15px; color: #1a3e72; }
+
+/* Table */
+.tbl-wrap { overflow-x: auto; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #f4f6fa; font-weight: bold; color: #333; }
+tr:hover td { background: #fafbff; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; background:#d4edda; color:#155724; }
+
+/* File reader area */
+.file-note { font-size: 11px; color: #888; margin-top: 4px; }
+.pdf-preview-link { color: #1a3e72; text-decoration: underline; cursor: pointer; font-size: 12px; }
+
+/* Search bar */
+.search-row { display:flex; gap:8px; margin-bottom:10px; }
+.search-row input { flex:1; padding:7px 10px; border:1px solid #ccc; border-radius:5px; font-size:12px; }
+.search-row input:focus { outline:none; border-color:#1a3e72; }
+
+.empty-msg { text-align:center; color:#aaa; padding:20px; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>🛂 eVisa Admin Panel</h2>
+
+  <div id="msgBox"></div>
+
+  <!-- ── LOGIN ── -->
+  <div id="loginPanel" class="active">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="adminUser" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn" onclick="doLogin()">🔐 Login</button>
+  </div>
+
+  <!-- ── ADMIN PANEL ── -->
+  <div id="adminPanel">
+    <div class="top-bar">
+      <h3>👋 Welcome, Admin</h3>
+      <button class="btn btn-red btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+
+    <!-- UPLOAD FORM -->
+    <div class="section-title">📤 Upload eVisa PDF</div>
+    <div class="form-group">
+      <label>E-Viza Broj *</label>
+      <input type="text" id="evisaNum" placeholder="AL27520639E">
+    </div>
+    <div class="form-group">
+      <label>Broj Pasoša *</label>
+      <input type="text" id="passNum" placeholder="US1842281">
+    </div>
+    <div class="form-group">
+      <label>Ime i Prezime</label>
+      <input type="text" id="clientName" placeholder="Muhammad Arslan Asghar">
+    </div>
+    <div class="form-group">
+      <label>PDF Fajl *</label>
+      <input type="file" id="pdfFile" accept=".pdf">
+      <div class="file-note">⚠️ PDF browser mein base64 ke tor pe save hoga (max ~5MB recommended)</div>
+    </div>
+    <button class="btn btn-green" onclick="doUpload()">✅ Upload & Save</button>
+
+    <!-- RECORDS TABLE -->
+    <div class="section-title">📋 Saved Records</div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search by eViza, pasoš, or name..." oninput="renderTable()">
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>eViza #</th>
+            <th>Pasoš #</th>
+            <th>Ime</th>
+            <th>Datum</th>
+            <th>PDF</th>
+            <th>Akcija</th>
+          </tr>
+        </thead>
+        <tbody id="recordsTbody"></tbody>
+      </table>
+      <div id="emptyMsg" class="empty-msg" style="display:none;">Nema uploadovanih dokumenata.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CREDENTIALS (change as needed) ──
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'password123';
+const STORAGE_KEY = 'evisa_records';
+
+// ── MSG ──
+function showMsg(text, type, duration = 4000) {
+  const box = document.getElementById('msgBox');
+  box.innerHTML = `<div class="msg ${type}">${text}</div>`;
+  if (duration) setTimeout(() => box.innerHTML = '', duration);
+}
+
+// ── LOGIN ──
+function doLogin() {
+  const user = document.getElementById('adminUser').value.trim();
+  const pass = document.getElementById('adminPass').value;
+  if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    document.getElementById('loginPanel').classList.remove('active');
+    document.getElementById('adminPanel').classList.add('active');
+    renderTable();
+  } else {
+    showMsg('❌ Pogrešno korisničko ime ili lozinka.', 'error');
+  }
+}
+
+// ── LOGOUT ──
+function doLogout() {
+  document.getElementById('adminPanel').classList.remove('active');
+  document.getElementById('loginPanel').classList.add('active');
+  document.getElementById('adminUser').value = '';
+  document.getElementById('adminPass').value = '';
+}
+
+// ── LOAD / SAVE RECORDS ──
+function loadRecords() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+function saveRecords(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+// ── UPLOAD ──
+function doUpload() {
+  const evisa   = document.getElementById('evisaNum').value.trim().toUpperCase();
+  const passport = document.getElementById('passNum').value.trim().toUpperCase();
+  const name    = document.getElementById('clientName').value.trim();
+  const fileInput = document.getElementById('pdfFile');
+  const file    = fileInput.files[0];
+
+  if (!evisa || !passport) { showMsg('❌ E-Viza broj i Broj pasoša su obavezni.', 'error'); return; }
+  if (!file) { showMsg('❌ Izaberite PDF fajl.', 'error'); return; }
+  if (file.type !== 'application/pdf') { showMsg('❌ Samo PDF fajlovi su dozvoljeni.', 'error'); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result; // data:application/pdf;base64,...
+
+    let records = loadRecords();
+
+    // Remove existing record with same evisa+passport
+    records = records.filter(r => !(r.evisa === evisa && r.passport === passport));
+
+    // Add new
+    records.push({
+      evisa,
+      passport,
+      name,
+      filename: file.name,
+      date: new Date().toLocaleString('sr-RS'),
+      pdf: base64
+    });
+
+    saveRecords(records);
+
+    showMsg('✅ Fajl uspešno sačuvan!', 'success');
+    document.getElementById('evisaNum').value = '';
+    document.getElementById('passNum').value = '';
+    document.getElementById('clientName').value = '';
+    fileInput.value = '';
+    renderTable();
+  };
+  reader.onerror = () => showMsg('❌ Greška pri čitanju fajla.', 'error');
+  reader.readAsDataURL(file);
+}
+
+// ── RENDER TABLE ──
+function renderTable() {
+  const records = loadRecords();
+  const search  = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = records.filter(r =>
+    r.evisa.toLowerCase().includes(search) ||
+    r.passport.toLowerCase().includes(search) ||
+    (r.name || '').toLowerCase().includes(search)
+  );
+
+  const tbody = document.getElementById('recordsTbody');
+  const emptyMsg = document.getElementById('emptyMsg');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  tbody.innerHTML = filtered.map((r, i) => `
+    <tr>
+      <td><strong>${r.evisa}</strong></td>
+      <td>${r.passport}</td>
+      <td>${r.name || '-'}</td>
+      <td>${r.date}</td>
+      <td>
+        <a class="pdf-preview-link" onclick="openPDF('${r.evisa}','${r.passport}')">📄 ${r.filename}</a>
+      </td>
+      <td>
+        <button class="btn btn-red btn-sm" onclick="deleteRecord('${r.evisa}','${r.passport}')">🗑 Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── OPEN PDF ──
+function openPDF(evisa, passport) {
+  const records = loadRecords();
+  const rec = records.find(r => r.evisa === evisa && r.passport === passport);
+  if (!rec) return;
+  const win = window.open();
+  win.document.write(`<iframe src="${rec.pdf}" style="width:100%;height:100vh;border:none;"></iframe>`);
+}
+
+// ── DELETE ──
+function deleteRecord(evisa, passport) {
+  if (!confirm(`Delete record for ${evisa}?`)) return;
+  let records = loadRecords();
+  records = records.filter(r => !(r.evisa === evisa && r.passport === passport));
+  saveRecords(records);
+  showMsg('🗑 Record deleted.', 'success', 2000);
+  renderTable();
+}
+</script>
+</body>
+</html>

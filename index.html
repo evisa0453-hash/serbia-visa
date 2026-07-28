@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="sr-Cyrl-RS">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="page_title">Портал за електронску идентификацију</title>
+    
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Theme stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-default font-normal">
+
+    <!-- Flag stripes at the very top (Serbian Tricolor red-blue-white) -->
+    <div class="top-flag-stripes">
+        <div class="stripe red"></div>
+        <div class="stripe blue"></div>
+        <div class="stripe white"></div>
+    </div>
+
+    <!-- Main Page Wrapper -->
+    <div class="page-wrapper">
+        
+        <!-- Header -->
+        <header class="main-header">
+            <!-- Top Dark Blue Bar -->
+            <div class="top-header-bar">
+                <div class="top-header-container">
+                    <!-- Language Selection Dropdown -->
+                    <div class="language-dropdown-container">
+                        <button class="lang-selector-btn" id="langSelectorBtn">
+                            <span id="selectedLangText">Ћирилица</span>
+                            <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="lang-menu" id="langMenu">
+                            <button class="lang-item active" data-lang="sr_RS">Ћирилица</button>
+                            <button class="lang-item" data-lang="lat_RS">Latinica</button>
+                            <button class="lang-item" data-lang="en_US">English</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- White Header Body Area -->
+            <div class="header-body">
+                <div class="header-body-container">
+                    <!-- Branding / Title -->
+                    <div class="branding">
+                        <a href="#" class="logo-link">
+                            <!-- Circular eID outline logo -->
+                            <div class="eid-circle-logo">
+                                <svg viewBox="0 0 100 110" class="eid-svg">
+                                    <!-- A stylized lowercase 'e' shape that forms a lightbulb bulb -->
+                                    <path d="M 28,48 H 72 A 22,22 0 1,0 65,64" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+                                    <!-- The horizontal lines at the bottom forming the lightbulb base -->
+                                    <line x1="38" y1="78" x2="62" y2="78" stroke="#c92c3b" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="38" y1="86" x2="62" y2="86" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="38" y1="94" x2="62" y2="94" stroke="#9ca3af" stroke-width="5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="logo-text-wrapper">
+                                <div class="logo-text-row">
+                                    <span class="logo-bold">eID</span><span class="logo-domain">.gov.rs</span>
+                                </div>
+                                <h1 class="logo-title" data-translate="header_title">Портал за електронску идентификацију</h1>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secondary Navigation bar -->
+            <div class="nav-bar">
+                <div class="nav-container">
+                    <nav class="header-nav">
+                        <ul>
+                            <li><a href="#" onclick="return false;" data-translate="nav_egr">еГрађанин</a></li>
+                            <li class="nav-divider">|</li>
+                            <li><a href="#" onclick="return false;" data-translate="nav_cloud">Потпис у клауду</a></li>
+                            <li class="nav-divider">|</li>
+                            <li><a href="#" onclick="return false;" data-translate="nav_help">Помоћ</a></li>
+                            <li class="nav-divider">|</li>
+                            <li><a href="#" onclick="return false;" data-translate="nav_contact">Контакт</a></li>
+                            <li class="nav-divider">|</li>
+                            <li><a href="#" onclick="return false;" class="nav-highlight" data-translate="nav_euprava">Портал еУправа</a></li>
+                            <li class="nav-divider">|</li>
+                            <li><a href="#" onclick="history.go(-1); return false;" data-translate="nav_back">Назад</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Breadcrumbs Title segment -->
+        <section class="breadcrumbs-section">
+            <div class="breadcrumbs-container">
+                <h1 class="page-main-heading" data-translate="breadcrumbs_heading">Пријава</h1>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-container">
+                
+                <!-- Authentication Card Container -->
+                <div class="auth-card">
+                    <!-- Nav Tabs list -->
+                    <div class="auth-tabs" role="tablist">
+                        <button class="tab-link active" id="tabUP" role="tab" aria-selected="true" aria-controls="panelUP">
+                            <div class="tab-icon-wrapper">
+                                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <span class="tab-label" data-translate="tab_up_title">Корисничко име и лозинка</span>
+                        </button>
+                        
+                        <button class="tab-link" id="tabSC" role="tab" aria-selected="false" aria-controls="panelSC">
+                            <div class="tab-icon-wrapper">
+                                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                    <path d="M12 8v4"></path>
+                                    <path d="M12 16h.01"></path>
+                                </svg>
+                            </div>
+                            <span class="tab-label" data-translate="tab_sc_title">Квалификовани електронски сертификат</span>
+                        </button>
+                        
+                        <button class="tab-link" id="tabCID" role="tab" aria-selected="false" aria-controls="panelCID">
+                            <div class="tab-icon-wrapper">
+                                <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                </svg>
+                            </div>
+                            <span class="tab-label" data-translate="tab_cid_title">Мобилна апликација</span>
+                        </button>
+                    </div>
+
+                    <!-- Tabs Panes content -->
+                    <div class="tab-content">
+                        
+                        <!-- TAB 1: USERNAME & PASSWORD -->
+                        <div class="tab-panel active" id="panelUP" role="tabpanel" aria-labelledby="tabUP">
+                            <div class="panel-header-illustration">
+                                <div class="avatar-circle">
+                                    <svg viewBox="0 0 24 24" class="avatar-svg" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <p class="tab-info-text">
+                                <span data-translate="up_desc">Пријава корисничким именом и лозинком је пријава основног нивоа поузданости.</span>
+                                <a href="https://eid.gov.rs/sr-Cyrl-RS/prijava-korisni%C4%8Dkim-imenom-i-lozinkom" target="_blank" class="info-link" data-translate="learn_more">Сазнајте више.</a>
+                            </p>
+                            
+                            <!-- Form container -->
+                            <form id="formUP" class="login-form" novalidate>
+                                <div class="form-group">
+                                    <label for="username1" class="form-label" data-translate="label_username">Корисничко име:</label>
+                                    <span class="field-desc" data-translate="username_desc">(Адреса електронске поште коришћена приликом регистрације)</span>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="username1" class="form-input" placeholder="E-viza broj" data-translate="placeholder_evisa" required>
+                                        <span class="error-msg" id="errorUsername1" data-translate="error_invalid_evisa">Молимо унесите исправан број е-визе.</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="label-row">
+                                        <label for="password1" class="form-label" data-translate="label_password">Ваша лозинка:</label>
+                                    </div>
+                                    <div class="input-wrapper password-wrapper">
+                                        <input type="text" id="password1" class="form-input" placeholder="Broj pasoša" data-translate="placeholder_passport" required>
+                                        <span class="error-msg" id="errorPassword1" data-translate="error_empty_password">Молимо унесите вашу лозинку.</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions-row">
+                                    <button type="submit" class="submit-btn green-glow-btn">
+                                        <div class="btn-icon-circle">
+                                            <svg viewBox="0 0 100 100" class="btn-svg-icon">
+                                                <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="8"/>
+                                                <path d="M25 50 Q37.5 40 50 50 T75 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                                <path d="M25 62 Q37.5 52 50 62 T75 62" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <span class="btn-text" data-translate="btn_enter">Уђите</span>
+                                        <span class="loading-spinner hidden"></span>
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <!-- TAB 2: QUALIFIED ELECTRONIC CERTIFICATE -->
+                        <div class="tab-panel" id="panelSC" role="tabpanel" aria-labelledby="tabSC">
+                            <div class="panel-header-illustration">
+                                <div class="avatar-circle certificate-theme">
+                                    <svg viewBox="0 0 24 24" class="avatar-svg" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        <path d="M12 8v4"></path>
+                                        <path d="M12 16h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <p class="tab-info-text">
+                                <span data-translate="sc_desc">Пријава квалификованим електронским сертификатом је пријава високог нивоа поузданости.</span>
+                                <a href="https://eid.gov.rs/sr-Cyrl-RS/prijava-kvalifikovanim-elektronskim-sertifikatom" target="_blank" class="info-link" data-translate="learn_more">Сазнајте више.</a>
+                            </p>
+                            
+                            <div class="certificate-scan-box">
+                                <div class="smartcard-icon-container">
+                                    <!-- Animated Smartcard SVG -->
+                                    <svg class="smartcard-svg" viewBox="0 0 100 100">
+                                        <rect x="15" y="25" width="70" height="50" rx="5" class="sc-card" fill="none" stroke="currentColor" stroke-width="3"></rect>
+                                        <rect x="25" y="40" width="16" height="12" rx="2" class="sc-chip" fill="currentColor"></rect>
+                                        <line x1="50" y1="20" x2="50" y2="8" class="sc-signal signal-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                                        <line x1="42" y1="18" x2="35" y2="10" class="sc-signal signal-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                                        <line x1="58" y1="18" x2="65" y2="10" class="sc-signal signal-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                                    </svg>
+                                </div>
+                                <p class="card-status-text" id="certScannerText" data-translate="sc_instruction">Убаците квалификовани електронски сертификат и кликните на Пријавите се.</p>
+                            </div>
+                            
+                            <div class="form-actions-row">
+                                <button type="button" class="submit-btn green-glow-btn" id="signinCertBtn">
+                                    <div class="btn-icon-circle">
+                                        <svg viewBox="0 0 100 100" class="btn-svg-icon">
+                                            <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="8"/>
+                                            <path d="M25 50 Q37.5 40 50 50 T75 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                            <path d="M25 62 Q37.5 52 50 62 T75 62" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <span class="btn-text" data-translate="btn_signin">Пријавите се</span>
+                                    <span class="loading-spinner hidden"></span>
+                                </button>
+                            </div>
+                            
+                            <div class="registration-footer-row">
+                                <p>
+                                    <span data-translate="no_account">Немате налог на eid.gov.rs?</span>
+                                    <a href="https://eid.gov.rs/sr-Cyrl-RS/pocetna" target="_blank" class="register-here-link" data-translate="register_here">Региструјте се овде.</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: MOBILE APP -->
+                        <div class="tab-panel" id="panelCID" role="tabpanel" aria-labelledby="tabCID">
+                            <div class="panel-header-illustration">
+                                <div class="avatar-circle mobile-theme">
+                                    <svg viewBox="0 0 24 24" class="avatar-svg" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <p class="tab-info-text">
+                                <span data-translate="cid_desc">Пријава мобилним телефоном обавља се помоћу апликације ConsentID и представља пријаву високог нивоа поузданости.</span>
+                                <a href="https://eid.gov.rs/sr-Cyrl-RS/prijava-mobilnom-aplikacijom" target="_blank" class="info-link" data-translate="learn_more">Сазнајте више.</a>
+                            </p>
+                            
+                            <!-- Form container -->
+                            <form id="formCID" class="login-form" novalidate>
+                                <div class="form-group">
+                                    <label for="usernameCid" class="form-label" data-translate="label_username">Корисничко име:</label>
+                                    <span class="field-desc" data-translate="username_desc">(Адреса електронске поште коришћена приликом регистрације)</span>
+                                    <div class="input-wrapper">
+                                        <input type="email" id="usernameCid" class="form-input" placeholder="primer@email.com" required>
+                                        <span class="error-msg" id="errorUsernameCid" data-translate="error_invalid_email">Молимо унесите исправну адресу електронске поште.</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions-row">
+                                    <button type="submit" class="submit-btn green-glow-btn">
+                                        <div class="btn-icon-circle">
+                                            <svg viewBox="0 0 100 100" class="btn-svg-icon">
+                                                <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="8"/>
+                                                <path d="M25 50 Q37.5 40 50 50 T75 50" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                                <path d="M25 62 Q37.5 52 50 62 T75 62" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                                            </svg>
+                                        </div>
+                                        <span class="btn-text" data-translate="btn_signin">Пријавите се</span>
+                                        <span class="loading-spinner hidden"></span>
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="registration-footer-row flex-column-links">
+                                <p>
+                                    <span data-translate="no_account">Немате налог на eid.gov.rs?</span>
+                                    <a href="https://eid.gov.rs/sr-Cyrl-RS/pocetna" target="_blank" class="register-here-link" data-translate="register_here">Региструјте се овде.</a>
+                                </p>
+                                <p class="activation-info-link-row">
+                                    <a href="https://eid.gov.rs/sr-Cyrl-RS/kako-do-parametara-za-aktivaciju-mobilne-aplikacije" target="_blank" class="info-link" data-translate="cid_activate_guide">Како да активирате мобилну апликацију ConsentID?</a>
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Mock Authentication Success / Status message -->
+                <div class="auth-result-card hidden" id="authResultCard">
+                    <div class="result-icon-container success" id="resultIconSuccess">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="result-icon-container error hidden" id="resultIconError">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3 id="resultTitle" data-translate="auth_success_title">Успешна пријава!</h3>
+                    <p id="resultDesc" data-translate="auth_success_desc">Успешно сте се аутентификовали на Порталу за електронску идентификацију.</p>
+                    <button type="button" class="panel-btn active" id="authResultCloseBtn" data-translate="btn_back_to_login">Назад на пријаву</button>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-top-anchor">
+                <div class="footer-top-container">
+                    <a href="#" class="to-top-btn" id="toTopBtn">
+                        <span data-translate="footer_to_top">Врх стране ↑</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-main-content">
+                <div class="footer-container">
+                    <div class="footer-branding">
+                        <img src="serbian-coat-of-arms.png" alt="Grb Srbije" class="footer-logo">
+                        <div class="footer-text-wrapper">
+                            <h3>eid.gov.rs</h3>
+                            <p data-translate="header_title">Портал за електронску идентификацију</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-license" data-translate="footer_license">
+                        Веб презентација је лиценцирана под условима лиценце Creative Commons Ауторство-Некомерцијално-Без прерада 3.0 Србија. Веб пројекат <a href="https://www.ite.gov.rs/" target="_blank">ite.gov.rs</a>
+                    </div>
+                    
+                    <nav class="footer-nav">
+                        <ul>
+                            <li><a href="#" onclick="return false;" data-translate="footer_privacy">Изјава о приватности</a></li>
+                            <li><a href="#" onclick="return false;" data-translate="footer_terms">Услови коришћења</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div class="cookie-consent-banner" id="cookieConsentBanner">
+        <div class="cookie-banner-container">
+            <div class="cookie-icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+            </div>
+            <div class="cookie-content">
+                <p data-translate="cookie_text">
+                    Користимо колачиће да бисмо осигурали да добијете најбоље могуће искуство. Ови колачићи се користе за одржавање непрекидне сесије уз пружање глатких и персонализованих услуга. Да бисте сазнали више о томе како користимо колачиће, погледајте нашу 
+                    <a href="#" target="_blank" data-translate="cookie_policy_link">Политика колачића</a>.
+                </p>
+            </div>
+            <div class="cookie-actions">
+                <button class="cookie-accept-btn green-glow-btn" id="cookieAcceptBtn" data-translate="btn_cookie_accept">Разумем</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Idle Timeout Modal Warning -->
+    <dialog class="idle-modal" id="idleModal">
+        <div class="idle-modal-box">
+            <div class="idle-warning-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <div class="idle-modal-content">
+                <h3 id="idleModalTitle" data-translate="timeout_title">Сесија ће ускоро истећи!</h3>
+                <p id="idleModalDesc">
+                    <span data-translate="timeout_desc_1">Нисте били активни дуже време. Ради безбедности, покрените пријаву испочетка или ћете бити преусмерени на почетну страну за</span>
+                    <strong id="idleCountdownText">2:00</strong>.
+                </p>
+            </div>
+            <div class="idle-modal-actions">
+                <button class="idle-btn dismiss" id="idleDismissBtn" data-translate="btn_dismiss">Затвори</button>
+                <button class="idle-btn action green-glow-btn" id="idleActionBtn" data-translate="btn_start_over">Покрени поново</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Client-side Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
