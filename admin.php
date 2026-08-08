@@ -1,6 +1,31 @@
 <?php
 session_start();
 
+// ─── Ensure any PHP fatal error becomes valid JSON instead of a blank/HTML
+//     response (this is what makes fetch()/await res.json() hang forever
+//     with a "(pending)" request in DevTools) ─────────────────────────
+error_reporting(E_ALL);
+ini_set('display_errors', '0'); // never leak raw PHP errors as HTML to the browser
+
+function eid_json_error($message, $code = 500) {
+    if (!headers_sent()) {
+        http_response_code($code);
+        header('Content-Type: application/json');
+    }
+    echo json_encode(['success' => false, 'message' => $message]);
+    exit();
+}
+
+set_exception_handler(function ($e) {
+    eid_json_error('Server error: ' . $e->getMessage());
+});
+register_shutdown_function(function () {
+    $err = error_get_last();
+    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        eid_json_error('Fatal server error: ' . $err['message'] . ' in ' . $err['file'] . ' on line ' . $err['line']);
+    }
+});
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
@@ -121,7 +146,12 @@ $valid_until = trim($_POST['valid_until'] ?? '');
     // Save file
     $uploads_dir = 'uploads/';
     if (!is_dir($uploads_dir)) {
-        mkdir($uploads_dir, 0755, true);
+        if (!@mkdir($uploads_dir, 0755, true)) {
+            eid_json_error('Uploads folder ne postoji i ne može se kreirati. Proverite dozvole na serveru (folder "uploads" mora biti writable, npr. chmod 755 ili 775).');
+        }
+    }
+    if (!is_writable($uploads_dir)) {
+        eid_json_error('Uploads folder nije writable. Na serveru pokrenite: chmod 755 uploads (ili 775 ako 755 ne radi).');
     }
 
     $safe_name = strtoupper(preg_replace('/[^A-Za-z0-9_\-]/', '_', $evisa_number));
@@ -161,7 +191,9 @@ $valid_until = trim($_POST['valid_until'] ?? '');
     'uploaded_at'     => date('Y-m-d H:i:s'),
 ];
 
-    file_put_contents($records_file, json_encode(array_values($records), JSON_PRETTY_PRINT));
+    if (@file_put_contents($records_file, json_encode(array_values($records), JSON_PRETTY_PRINT)) === false) {
+        eid_json_error('PDF je sačuvan, ali records.json nije writable. Proverite dozvole (chmod 644 na uploads/records.json, chmod 755 na uploads folder).');
+    }
 
     echo json_encode(['success' => true, 'message' => 'Fajl uspešno otpremljen', 'filename' => $filename]);
     exit();
@@ -282,7 +314,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'edit') {
         'updated_at'      => date('Y-m-d H:i:s'),
     ];
 
-    file_put_contents($records_file, json_encode(array_values($records), JSON_PRETTY_PRINT));
+    if (@file_put_contents($records_file, json_encode(array_values($records), JSON_PRETTY_PRINT)) === false) {
+        eid_json_error('records.json nije writable. Proverite dozvole (chmod 644 na uploads/records.json).');
+    }
 
     echo json_encode(['success' => true, 'message' => 'Zapis uspešno izmenjen']);
     exit();
@@ -331,7 +365,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete') {
         exit();
     }
 
-    file_put_contents($records_file, json_encode(array_values($remaining), JSON_PRETTY_PRINT));
+    if (@file_put_contents($records_file, json_encode(array_values($remaining), JSON_PRETTY_PRINT)) === false) {
+        eid_json_error('records.json nije writable. Proverite dozvole (chmod 644 na uploads/records.json).');
+    }
 
     // Remove the PDF file from disk too
     if ($deletedFilename) {
@@ -519,6 +555,28 @@ function msg(text, type) {
   setTimeout(() => box.innerHTML = '', 4000);
 }
 
+// Wraps fetch('admin.php', ...) so a bad/HTML/empty response never hangs
+// silently — it always resolves to {success:false, message:...} instead.
+async function postToAdmin(formData) {
+  let res;
+  try {
+    res = await fetch('admin.php', { method: 'POST', body: formData });
+  } catch (networkErr) {
+    return { success: false, message: 'Ne mogu da se povežem sa serverom (admin.php). Proverite internet konekciju.' };
+  }
+
+  const raw = await res.text();
+  try {
+    return JSON.parse(raw);
+  } catch (parseErr) {
+    console.error('admin.php did not return valid JSON:', raw);
+    return {
+      success: false,
+      message: 'Server je vratio neočekivan odgovor (HTTP ' + res.status + '). Proverite PHP error log na serveru.'
+    };
+  }
+}
+
 async function doLogin() {
   const user = document.getElementById('adminUser').value;
   const pass = document.getElementById('adminPass').value;
@@ -526,8 +584,7 @@ async function doLogin() {
   fd.append('action', 'login');
   fd.append('username', user);
   fd.append('password', pass);
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
+  const data = await postToAdmin(fd);
   if (data.success) {
     document.getElementById('loginPanel').classList.remove('active');
     document.getElementById('uploadPanel').classList.add('active');
@@ -549,11 +606,13 @@ async function doUpload() {
   fd.append('passport_number', document.getElementById('passNum').value);
   fd.append('name', document.getElementById('clientName').value);
   fd.append('message', document.getElementById('visaMessage').value);
-fd.append('issue_date', document.getElementById('issueDate').value);
-fd.append('valid_until', document.getElementById('validUntil').value);
-  fd.append('pdf_file', document.getElementById('pdfFile').files[0]);
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
+  fd.append('issue_date', document.getElementById('issueDate').value);
+  fd.append('valid_until', document.getElementById('validUntil').value);
+  const pdfInput = document.getElementById('pdfFile');
+  if (!pdfInput.files[0]) { msg('❌ Izaberite PDF fajl.', 'error'); return; }
+  fd.append('pdf_file', pdfInput.files[0]);
+
+  const data = await postToAdmin(fd);
   if (data.success) {
     msg('✅ ' + data.message, 'success');
     document.getElementById('evisaNum').value = '';
@@ -649,8 +708,8 @@ async function saveEdit() {
     fd.append('pdf_file', fileInput.files[0]);
   }
 
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
+  const res = await postToAdmin(fd);
+  const data = res;
 
   if (data.success) {
     msg('✅ ' + data.message, 'success');
@@ -673,8 +732,7 @@ async function deleteRecord(evisaEnc, passEnc) {
   fd.append('evisa_number', evisa);
   fd.append('passport_number', passport);
 
-  const res = await fetch('admin.php', { method: 'POST', body: fd });
-  const data = await res.json();
+  const data = await postToAdmin(fd);
 
   if (data.success) {
     msg('🗑️ ' + data.message, 'success');
